@@ -9,7 +9,8 @@ const ParkingResultSchema = new Schema({
   display_address: String,
   district: String,
   park_id: String,
-  space: Number
+  space: Number,
+  succeed: Number
 }, {
     timestamps: true
 })
