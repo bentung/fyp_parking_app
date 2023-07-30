@@ -10,9 +10,9 @@ const connectDB = require('./connectMongo')
 
 connectDB()
 
-const BookModel = require('./models/book.model')
+const ParkingResultModel = require('./models/ParkingResult.model')
 
-app.get('/api/v1/books', async (req, res) => {
+app.get('/api/v1/parkingResult', async (req, res) => {
 
     const { limit = 5, orderBy = 'name', sortBy = 'asc', keyword } = req.query
     let page = +req.query?.page
@@ -23,18 +23,21 @@ app.get('/api/v1/books', async (req, res) => {
 
     const query = {}
 
+    const projection = { updatedAt: 0 };
+
     if (keyword) query.name = { "$regex": keyword, "$options": "i" }
 
     try {
-        const data = await BookModel.find(query).skip(skip).limit(limit).sort({[orderBy]: sortBy})
-        const totalItems = await BookModel.countDocuments(query)
+        // const data = await ParkingResultModel.find(query).skip(skip).limit(limit).sort({[orderBy]: sortBy})
+        const data = await ParkingResultModel.find(query, projection);
+        const totalItems = await ParkingResultModel.countDocuments(query)
         return res.status(200).json({
             msg: 'Ok',
             data,
-            totalItems,
-            totalPages: Math.ceil(totalItems / limit),
-            limit: +limit,
-            currentPage: page
+            // totalItems,
+            // totalPages: Math.ceil(totalItems / limit),
+            // limit: +limit,
+            // currentPage: page
         })
     } catch (error) {
         return res.status(500).json({
@@ -43,9 +46,9 @@ app.get('/api/v1/books', async (req, res) => {
     }
 })
 
-app.get('/api/v1/books/:id', async (req, res) => {
+app.get('/api/v1/parkingResult/:id', async (req, res) => {
     try {
-        const data = await BookModel.findById(req.params.id)
+        const data = await ParkingResultModel.findById(req.params.id)
 
         if (data) {
             return res.status(200).json({
@@ -64,13 +67,17 @@ app.get('/api/v1/books/:id', async (req, res) => {
     }
 })
 
-app.post('/api/v1/books', async (req, res) => {
+app.post('/api/v1/parkingResult', async (req, res) => {
     try {
-        const { name, author, price, description } = req.body
-        const book = new BookModel({
-            name, author, price, description
-        })
-        const data = await book.save()
+        // const { name, author, price, description } = req.body
+
+        // const parking = new ParkingResultModel({
+        //     name, author, price, description
+        // })
+        const parking = new ParkingResultModel({
+            ...req.body,
+        });
+        const data = await parking.save()
         return res.status(200).json({
             msg: 'Ok',
             data
@@ -82,12 +89,12 @@ app.post('/api/v1/books', async (req, res) => {
     }
 })
 
-app.put('/api/v1/books/:id', async (req, res) => {
+app.put('/api/v1/parkingResult/:id', async (req, res) => {
     try {
         const { name, author, price, description } = req.body
         const { id } = req.params
 
-        const data = await BookModel.findByIdAndUpdate(id, {
+        const data = await ParkingResultModel.findByIdAndUpdate(id, {
             name, author, price, description
         }, { new: true })
 
@@ -102,9 +109,9 @@ app.put('/api/v1/books/:id', async (req, res) => {
     }
 })
 
-app.delete('/api/v1/books/:id', async (req, res) => {
+app.delete('/api/v1/parkingResult/:id', async (req, res) => {
     try {
-        await BookModel.findByIdAndDelete(req.params.id)
+        await ParkingResultModel.findByIdAndDelete(req.params.id)
         return res.status(200).json({
             msg: 'Ok',
         })
