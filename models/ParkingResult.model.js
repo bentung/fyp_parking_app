@@ -4,8 +4,8 @@ const { Schema } = mongoose
 const ParkingResultSchema = new Schema({
   name_tc: String,
   name_en: String,
-  latitude: String,
-  longitude: String,
+  latitude: Number,
+  longitude: Number,
   display_address: String,
   district: String,
   park_id: String,
